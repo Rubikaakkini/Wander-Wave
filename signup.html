@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - WanderWave</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f475e 0%, #0f475e 100%);
+            color: white;
+            padding: 20px 5%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .auth-container {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .auth-title {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            position: relative;
+        }
+
+        .auth-title:after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #0f475e;
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: #0e5caa;
+        }
+
+        .google-btn {
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .google-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        .divider:before, .divider:after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .divider:before {
+            margin-right: 10px;
+        }
+
+        .divider:after {
+            margin-left: 10px;
+        }
+
+        .auth-footer {
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .auth-footer a {
+            color: #4361ee;
+            text-decoration: none;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 25px;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                gap: 10px;
+            }
+            nav a {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>WanderWave</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="blog.html">Blog</a>
+            <a href="package.html" class="active">Package</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Create Account</h1>
+            
+            <button id="googleSignUp" class="auth-btn google-btn">
+                <i class="fab fa-google"></i> Sign up with Google
+            </button>
+            
+            <div class="divider">or</div>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required minlength="8">
+                </div>
+                <button type="submit" class="auth-btn">Sign Up</button>
+            </form>
+            
+            <p class="auth-footer">
+                Already have an account? <a href="login.html">Log in</a>
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 WanderWave. All rights reserved.</p>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { 
+            getAuth, 
+            GoogleAuthProvider, 
+            signInWithPopup,
+            createUserWithEmailAndPassword,
+            updateProfile
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-fahEN52GZQNKi_WUxeYMBw7zRrrmNig",
+            authDomain: "wanderwave-d0e63.firebaseapp.com",
+            projectId: "wanderwave-d0e63",
+            storageBucket: "wanderwave-d0e63.appspot.com",
+            messagingSenderId: "468790759966",
+            appId: "1:468790759966:web:e785a6c3899e9af9de940f",
+            measurementId: "G-WF41KY8X51"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+
+        // Google Sign Up
+        document.getElementById('googleSignUp').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const provider = new GoogleAuthProvider();
+            
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                alert(`Welcome ${user.displayName}! Your account has been created.`);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error("Google sign-in error:", error);
+                alert(`Error signing up with Google: ${error.message}`);
+            }
+        });
+
+        // Email/password sign up
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, {
+                    displayName: name
+                });
+                alert('Account created successfully!');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error("Email sign-up error:", error);
+                let errorMessage = "Error creating account.";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "This email is already registered. Please log in.";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = "Password should be at least 6 characters.";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Please enter a valid email address.";
+                }
+                alert(errorMessage);
+            }
+        });
+    </script>
+</body>
+</html>

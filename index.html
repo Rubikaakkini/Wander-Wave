@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wander Wave</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0f475e;
+            --secondary-color: #0f475e;
+            --accent-color: #499cfb;
+            --danger-color: #e5a00b;
+            --success-color: #4cc9f0;
+            --text-dark: #2b2d42;
+            --text-light: #f8f9fa;
+            --bg-light: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 0.2rem 1rem; /* Reduced padding */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo-container h1 {
+    font-size: 1.2rem; /* Smaller logo text */
+    margin: 0;
+}
+
+.logo {
+    height: 40px; /* Smaller logo image */
+    margin-right: 0.5rem;
+}
+
+nav a {
+    font-size: 0.9rem; /* Smaller nav link text */
+    margin-left: 1rem;
+}
+
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+       
+
+        nav a.active {
+            font-weight: 600;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: white;
+            transition: var(--transition);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Banner Styles */
+        .banner {
+            position: relative;
+            width: 100%;
+            height: 500px;
+        }
+        
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            z-index: 1;
+        }
+        
+        .banner-title {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+        }
+        
+        .banner-subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .banner-nav {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .banner-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .banner-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .banner-nav a.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+        
+        .banner-tagline {
+            font-size: 1.2rem;
+            font-style: italic;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .banner-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .search-container {
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .searchBox {
+            width: 100%;
+            max-width: 600px;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: none;
+            box-shadow: var(--shadow);
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .searchBox:focus {
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Destinations Section Styles */
+        .section-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        .scroll-arrows {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .scroll-arrow {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .scroll-arrow:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .destinations-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-light);
+        }
+
+        .destinations-scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .destinations-scroll-container::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        .destinations-scroll-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        .destinations-container {
+            display: inline-flex;
+            gap: 1.5rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .destination {
+            min-width: 280px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .destination:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .destination img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .destination-content {
+            padding: 1rem;
+        }
+
+        .destination h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .destination p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .season-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--danger-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 1;
+        }
+
+        /* Search Results Section */
+        #searchResults {
+            display: none;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .search-results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Profile Section Styles */
+        #profileSection {
+            position: relative;
+            display: none;
+            align-items: center;
+            margin-left: 1rem;
+            cursor: pointer;
+        }
+
+        .profile-initial {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        #profileSection:hover .profile-initial {
+            transform: scale(1.1);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            width: 280px;
+            display: none;
+            z-index: 100;
+        }
+
+        #profileSection:hover .profile-dropdown {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-info {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .profile-email {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .signup {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .signup:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .login {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        .login:hover {
+            background: #f5f5f5;
+        }
+
+        .logout-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+            width: 100%;
+            text-align: center;
+        }
+
+        .logout-btn:hover {
+            background: #d31665;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            nav {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+                background: #d31665;
+            }
+
+            .destination {
+                min-width: 240px;
+            }
+
+            .banner-title {
+                font-size: 2.5rem;
+            }
+            
+            .banner-subtitle {
+                font-size: 1.3rem;
+                background: #d31665;
+            }
+            
+            .banner-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="home-page">
+
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="Wander Wave Logo" class="logo">
+            <h1>Wander Wave</h1>
+        </div>
+        <nav>
+            
+            <div id="profileSection">
+                <div class="profile-initial"></div>
+                <div class="profile-dropdown">
+                    <div class="profile-info">
+                        <div class="profile-name"></div>
+                        <div class="profile-email"></div>
+                    </div>
+                    <button id="headerLogoutBtn" class="logout-btn">Log Out</button>
+                </div>
+            </div>
+            <div class="auth-buttons" id="authButtons">
+                <a href="signup.html" class="btn signup">
+                    <i class="fa fa-user-plus"></i> Sign Up
+                </a>
+                <a href="login.html" class="btn login">
+                    <i class="fa fa-sign-in-alt"></i> Login
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="banner">
+        <video autoplay muted loop class="banner-video">
+            <source src="videos/banner.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="banner-overlay">       
+            
+            <nav class="banner-nav">
+                <a href="index.html">Home</a>
+                <a href="destinations.html">Destinations</a>
+                <a href="blog.html" class="active">Blog</a>
+                <a href="package.html">Packages</a>
+                <a href="booking.html">Bookings</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </section>
+    
+    <div class="search-container">
+        <input type="text" class="searchBox" id="searchBox" placeholder="Search destinations, seasons...">
+    </div>
+    
+    <!-- Search Results Section (Hidden by default) -->
+    <section id="searchResults">
+        <div class="section-header">
+            <h2 class="section-title">Search Results</h2>
+        </div>
+        <div class="search-results-container" id="searchResultsContainer">
+            <!-- Results will be populated here by JavaScript -->
+        </div>
+    </section>
+    
+    <!-- Seasonal Destinations Section -->
+    <section class="section-container" id="seasonalSection">
+        <div class="section-header">
+            <h2 class="section-title">Seasonal Escapes</h2>
+            <div class="scroll-arrows">
+                <button class="scroll-arrow left-arrow seasonal-left">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="scroll-arrow right-arrow seasonal-right">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="destinations-scroll-container" id="seasonalScrollContainer">
+            <div class="destinations-container seasonal-container">
+                <div class="destination" data-search="santorini greece summer europe">
+                    <span class="season-badge">Summer</span>
+                    <img src="images/santorini.jpg" alt="Santorini">
+                    <div class="destination-content">
+                        <h3>Santorini, Greece</h3>
+                        <p>Perfect summer getaway with stunning sunsets</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="swiss alps winter snow skiing">
+                    <span class="season-badge">Winter</span>
+                    <img src="images/switzerland.jpg" alt="Switzerland">
+                    <div class="destination-content">
+                        <h3>Swiss Alps</h3>
+                        <p>Snowy winter wonderland for skiing</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="kyoto japan spring cherry blossoms">
+                    <span class="season-badge">Spring</span>
+                    <img src="images/japan.jpg" alt="Japan Cherry Blossoms">
+                    <div class="destination-content">
+                        <h3>Kyoto, Japan</h3>
+                        <p>Cherry blossom season in ancient capital</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="new england usa autumn fall foliage">
+                    <span class="season-badge">Autumn</span>
+                    <img src="images/new-england.jpg" alt="New England">
+                    <div class="destination-content">
+                        <h3>New England, USA</h3>
+                        <p>Fall foliage paradise with vibrant colors</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="kerala india monsoon rains greenery">
+                    <span class="season-badge">Monsoon</span>
+                    <img src="images/kerala.jpg" alt="Kerala">
+                    <div class="destination-content">
+                        <h3>Kerala, India</h3>
+                        <p>Lush green landscapes during monsoon</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="iceland summer midnight sun northern lights">
+                    <span class="season-badge">Summer</span>
+                    <img src="images/iceland.jpg" alt="Iceland">
+                    <div class="destination-content">
+                        <h3>Iceland</h3>
+                        <p>Midnight sun and breathtaking landscapes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Popular Destinations Section -->
+    <section class="section-container" id="popularSection">
+        <div class="section-header">
+            <h2 class="section-title">Popular Destinations</h2>
+            <div class="scroll-arrows">
+                <button class="scroll-arrow left-arrow popular-left">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="scroll-arrow right-arrow popular-right">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="destinations-scroll-container" id="popularScrollContainer">
+            <div class="destinations-container popular-container">
+                <div class="destination" data-search="paris france europe city of love lights">
+                    <img src="images/paris.jpg" alt="Paris">
+                    <div class="destination-content">
+                        <h3>Paris, France</h3>
+                        <p>City of love & lights with iconic landmarks</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="bali indonesia tropical beach paradise">
+                    <img src="images/bali.jpg" alt="Bali">
+                    <div class="destination-content">
+                        <h3>Bali, Indonesia</h3>
+                        <p>Tropical paradise with rich culture</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="greece islands mediterranean beaches">
+                    <img src="images/greece.jpg" alt="Greece">
+                    <div class="destination-content">
+                        <h3>Santorini, Greece</h3>
+                        <p>White & blue coastal beauty</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="china terracotta army xian ancient history">
+                    <img src="images/china.jpg" alt="China">
+                    <div class="destination-content">
+                        <h3>Xi'an, China</h3>
+                        <p>Ancient warriors of the Terracotta Army</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="kyoto japan temples gardens tradition">
+                    <img src="images/japan.jpg" alt="Japan">
+                    <div class="destination-content">
+                        <h3>Kyoto, Japan</h3>
+                        <p>Ancient temples & serene gardens</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="maldives islands beach luxury honeymoon">
+                    <img src="images/maldives.jpg" alt="Maldives">
+                    <div class="destination-content">
+                        <h3>Maldives</h3>
+                        <p>Crystal clear waters and overwater bungalows</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="new york usa city skyscrapers statue of liberty">
+                    <img src="images/newyork.jpg" alt="New York">
+                    <div class="destination-content">
+                        <h3>New York, USA</h3>
+                        <p>The city that never sleeps</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="rome italy colosseum vatican history">
+                    <img src="images/rome.jpg" alt="Rome">
+                    <div class="destination-content">
+                        <h3>Rome, Italy</h3>
+                        <p>Eternal city of ancient history</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="Madurai meenakshi Amman Temple">
+                    <img src="images/madurai.jpg" alt="Madurai">
+                    <div class="destination-content">
+                        <h3>Madurai , TamilNadu</h3>
+                        <p> Meenakshi Temple and vibrant culture</p>
+                    </div>
+                </div>
+                <div class="destination" data-search="Sivakasi">
+                    <img src="images/sivakasi.jpg" alt="Sivakasi">
+                    <div class="destination-content">
+                        <h3>Sivakasi , TamilNadu</h3>
+                        <p>Little Japan</p>
+                        <p>Place of Fireworks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { 
+            getAuth, 
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA-fahEN52GZQNKi_WUxeYMBw7zRrrmNig",
+            authDomain: "wanderwave-d0e63.firebaseapp.com",
+            projectId: "wanderwave-d0e63",
+            storageBucket: "wanderwave-d0e63.appspot.com",
+            messagingSenderId: "468790759966",
+            appId: "1:468790759966:web:e785a6c3899e9af9de940f",
+            measurementId: "G-WF41KY8X51"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // DOM elements
+        const profileSection = document.getElementById('profileSection');
+        const authButtons = document.getElementById('authButtons');
+        const profileInitial = document.querySelector('.profile-initial');
+        const profileName = document.querySelector('.profile-name');
+        const profileEmail = document.querySelector('.profile-email');
+        const headerLogoutBtn = document.getElementById('headerLogoutBtn');
+
+        // Check authentication state when page loads
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                showLoggedInView(user);
+                
+                // Save user data to localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0]
+                }));
+            } else {
+                // User is signed out
+                showLoginView();
+                localStorage.removeItem('user');
+            }
+        });
+
+        // Check for user data in localStorage on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                const user = JSON.parse(userData);
+                updateProfileUI(user);
+            }
+        });
+
+        function updateProfileUI(user) {
+            if (profileSection) profileSection.style.display = 'flex';
+            if (authButtons) authButtons.style.display = 'none';
+            
+            if (user) {
+                const displayName = user.displayName || user.email.split('@')[0];
+                const initial = displayName.charAt(0).toUpperCase();
+                
+                if (profileInitial) profileInitial.textContent = initial;
+                if (profileName) profileName.textContent = displayName;
+                if (profileEmail) profileEmail.textContent = user.email;
+            }
+        }
+
+        function showLoggedInView(user) {
+            updateProfileUI(user);
+        }
+
+        function showLoginView() {
+            if (profileSection) profileSection.style.display = 'none';
+            if (authButtons) authButtons.style.display = 'flex';
+        }
+
+        // Header logout functionality
+        if (headerLogoutBtn) {
+            headerLogoutBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                try {
+                    await signOut(auth);
+                    alert('You have been logged out successfully.');
+                    showLoginView();
+                } catch (error) {
+                    console.error("Logout error:", error);
+                    alert('Error logging out: ' + error.message);
+                }
+            });
+        }
+    </script>
+
+    <!-- JavaScript for scrolling and search functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all destinations for search functionality
+            const allDestinations = Array.from(document.querySelectorAll('.destination'));
+            
+            // Search functionality
+            const searchBox = document.getElementById('searchBox');
+            const searchResults = document.getElementById('searchResults');
+            const searchResultsContainer = document.getElementById('searchResultsContainer');
+            const seasonalSection = document.getElementById('seasonalSection');
+            const popularSection = document.getElementById('popularSection');
+            
+            searchBox.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                
+                if (searchTerm.length > 0) {
+                    // Show search results section and hide regular sections
+                    searchResults.style.display = 'block';
+                    seasonalSection.style.display = 'none';
+                    popularSection.style.display = 'none';
+                    
+                    // Filter destinations
+                    const filteredDestinations = allDestinations.filter(destination => {
+                        const searchData = destination.getAttribute('data-search').toLowerCase();
+                        return searchData.includes(searchTerm);
+                    });
+                    
+                    // Display results
+                    displaySearchResults(filteredDestinations);
+                } else {
+                    // Hide search results and show regular sections
+                    searchResults.style.display = 'none';
+                    seasonalSection.style.display = 'block';
+                    popularSection.style.display = 'block';
+                }
+            });
+            
+            function displaySearchResults(destinations) {
+                searchResultsContainer.innerHTML = '';
+                
+                if (destinations.length === 0) {
+                    searchResultsContainer.innerHTML = '<p>No destinations found matching your search.</p>';
+                    return;
+                }
+                
+                destinations.forEach(destination => {
+                    const clone = destination.cloneNode(true);
+                    clone.addEventListener('click', () => {
+                        window.location.href = 'destinations.html';
+                    });
+                    searchResultsContainer.appendChild(clone);
+                });
+            }
+            
+            // Initialize scrolling functionality for both sections
+            initScrolling('seasonal');
+            initScrolling('popular');
+            
+            // Make all destination cards clickable
+            document.querySelectorAll('.destination').forEach(card => {
+                card.addEventListener('click', function() {
+                    window.location.href = 'destinations.html';
+                });
+            });
+            
+            function initScrolling(sectionType) {
+                const scrollContainer = document.getElementById(`${sectionType}ScrollContainer`);
+                const leftArrow = document.querySelector(`.${sectionType}-left`);
+                const rightArrow = document.querySelector(`.${sectionType}-right`);
+                const destinationCard = document.querySelector(`.${sectionType}-container .destination`);
+                
+                const scrollAmount = destinationCard ? destinationCard.offsetWidth + 24 : 300;
+                
+                leftArrow.addEventListener('click', function() {
+                    scrollContainer.scrollBy({
+                        left: -scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+                
+                rightArrow.addEventListener('click', function() {
+                    scrollContainer.scrollBy({
+                        left: scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+                
+                // Touch and drag scrolling
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                
+                scrollContainer.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    startX = e.pageX - scrollContainer.offsetLeft;
+                    scrollLeft = scrollContainer.scrollLeft;
+                });
+                
+                scrollContainer.addEventListener('mouseleave', () => {
+                    isDown = false;
+                });
+                
+                scrollContainer.addEventListener('mouseup', () => {
+                    isDown = false;
+                });
+                
+                scrollContainer.addEventListener('mousemove', (e) => {
+                    if(!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - scrollContainer.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    scrollContainer.scrollLeft = scrollLeft - walk;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

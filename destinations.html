@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations - Wander Wave</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Add these after your existing CSS links -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* Main Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #134a58 0%, #0d3241 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            width: 70px;
+            margin-bottom: 1rem;
+        }
+        
+        nav {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        nav a.active {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        #mic-button:hover {
+    color: #ff5733;
+    transform: scale(1.1);
+}
+
+        /* Search and Filter Section */
+        .search-filter-section {
+            background-color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-container {
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            padding: 0 2rem;
+            text-align: center;
+        }
+        
+        .searchBox {
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .searchBox:focus {
+            outline: none;
+            border-color: #87CEEB;
+            box-shadow: 0 0 0 3px rgba(135, 206, 235, 0.2);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1.2rem;
+            background: #e0f2fe;
+            color: #134a58;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: #134a58;
+            color: white;
+        }
+        
+        /* Destinations Grid */
+        .destinations-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .destination {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .destination:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .destination img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .destination-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .destination h2 {
+            color: #134a58;
+            margin: 0 0 0.5rem;
+            font-size: 1.3rem;
+        }
+        
+        .destination p {
+            color: #666;
+            margin: 0 0 1.5rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        .explore-btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background: #ff5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            text-align: center;
+            transition: background 0.3s;
+            align-self: flex-start;
+        }
+        
+        .explore-btn:hover {
+            background: #e04e2b;
+        }
+        /* Map container */
+.map-container {
+    width: 100%;
+    height: 300px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin: 1rem 0;
+}
+
+/* Location message */
+.location-message {
+    background: #e6f7ff;
+    color: #1890ff;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #91d5ff;
+}
+
+.location-message i {
+    color: #1890ff;
+}
+
+/* Map error state */
+.map-error {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    text-align: center;
+    padding: 1rem;
+}
+
+.map-error i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+}
+        
+        /* Destination Details Modal */
+        #destination-details {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        
+        #destination-details.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        /* Location permission message */
+
+        .details-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .back-btn {
+            background: #134a58;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: #0d3241;
+        }
+        
+        .heart {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #ccc;
+            transition: all 0.3s;
+        }
+        
+        .heart.favorite {
+            color: #ff4757;
+        }
+        
+        #destination-title {
+            color: #134a58;
+            margin: 0 0 1rem;
+            font-size: 1.8rem;
+        }
+        
+        #destination-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 0 0 1.5rem;
+        }
+        
+        #destination-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+        
+        .destination-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+
+.leaflet-popup-content {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+}
+
+.leaflet-popup-content b {
+    color: #134a58;
+}
+    
+    .mapboxgl-ctrl {
+        border-radius: 4px;
+    }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .info-item i {
+            color: #87CEEB;
+            font-size: 1.2rem;
+        }
+        
+        h3 {
+            color: #134a58;
+            margin: 0 0 1rem;
+            font-size: 1.4rem;
+        }
+        
+        #highlights-list {
+            margin: 0 0 2rem;
+            padding-left: 1.5rem;
+        }
+        
+        #highlights-list li {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        
+        .view-package-btn {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background: #ff5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .view-package-btn:hover {
+            background: #e04e2b;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .destinations-list {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                padding: 2rem 1rem;
+            }
+            
+            .details-content {
+                padding: 1.5rem;
+            }
+            
+            #destination-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+            
+            nav {
+                gap: 0.8rem;
+            }
+            
+            .search-container {
+                padding: 0 1rem;
+            }
+            
+            .filter-buttons {
+                gap: 0.5rem;
+            }
+            
+            .filter-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .destination {
+                border-radius: 8px;
+            }
+            
+            .destination-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="images/logo.png" alt="Wander Wave Logo" class="logo">
+        <h1>Wander Wave</h1>
+        <nav aria-label="Main Navigation">
+            <a href="index.html">Home</a>
+            <a href="destinations.html" class="active">Destinations</a>
+            <a href="wishlist.html">Wishlist</a>
+            <a href="booking.html">My Bookings <span id="booking-count"></span></a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Search and Filter Section -->
+    <section class="search-filter-section">
+        <div class="search-container">
+            <input type="text" class="searchBox" id="destination-search" placeholder="Where do you want to go?">
+            <button id="mic-button" style="margin-left: 10px; background: transparent; border: none; cursor: pointer; font-size: 1.2rem;">
+              <i class="fas fa-microphone"></i>
+            </button>
+            <div id="status" style="margin-top: 10px; color: #0d3241; font-weight: 500;"></div>
+          </div>
+          
+        </div>
+    </section>
+
+    <!-- Destination List -->
+    <main class="destinations-list">
+        <!-- Europe -->
+        <div class="destination" data-category="cities historical">
+            <img src="images/paris.jpg" alt="Paris">
+            <div class="destination-content">
+                <h2>Paris, France</h2>
+                <p>City of love & lights with iconic landmarks like the Eiffel Tower and Louvre Museum.</p>
+                <button class="explore-btn" data-destination="paris">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="cities historical">
+            <img src="images/rome.jpg" alt="Rome">
+            <div class="destination-content">
+                <h2>Rome, Italy</h2>
+                <p>Eternal city with ancient ruins like the Colosseum and delicious Italian cuisine.</p>
+                <button class="explore-btn" data-destination="rome">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="cities beaches">
+            <img src="images/barcelona.jpg" alt="Barcelona">
+            <div class="destination-content">
+                <h2>Barcelona, Spain</h2>
+                <p>Vibrant city with Gaudi's architecture and beautiful Mediterranean beaches.</p>
+                <button class="explore-btn" data-destination="barcelona">Explore</button>
+            </div>
+        </div>
+        
+        <!-- Asia -->
+        <div class="destination" data-category="beaches">
+            <img src="images/bali.jpg" alt="Bali">
+            <div class="destination-content">
+                <h2>Bali, Indonesia</h2>
+                <p>Tropical paradise with lush jungles, stunning beaches, and vibrant culture.</p>
+                <button class="explore-btn" data-destination="bali">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="historical">
+            <img src="images/japan.jpg" alt="Kyoto">
+            <div class="destination-content">
+                <h2>Kyoto, Japan</h2>
+                <p>Ancient temples, traditional tea houses, and beautiful cherry blossoms.</p>
+                <button class="explore-btn" data-destination="kyoto">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="historical">
+            <img src="images/china.jpg" alt="China">
+            <div class="destination-content">
+                <h2>Xi'an, China</h2>
+                <p>Home of the Terracotta Army and ancient city walls with rich history.</p>
+                <button class="explore-btn" data-destination="china">Explore</button>
+            </div>
+        </div>
+        
+        <!-- Americas -->
+        <div class="destination" data-category="cities">
+            <img src="images/newyork.jpg" alt="New York">
+            <div class="destination-content">
+                <h2>New York, USA</h2>
+                <p>The city that never sleeps with iconic skyline, culture, and attractions.</p>
+                <button class="explore-btn" data-destination="newyork">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="beaches">
+            <img src="images/cancun.jpg" alt="Cancun">
+            <div class="destination-content">
+                <h2>Cancun, Mexico</h2>
+                <p>Turquoise waters and white sand beaches in the beautiful Caribbean.</p>
+                <button class="explore-btn" data-destination="cancun">Explore</button>
+            </div>
+        </div>
+        
+        <!-- Other -->
+        <div class="destination" data-category="beaches">
+            <img src="images/maldives.jpg" alt="Maldives">
+            <div class="destination-content">
+                <h2>Maldives</h2>
+                <p>Crystal clear waters and luxurious overwater bungalows in paradise.</p>
+                <button class="explore-btn" data-destination="maldives">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="mountains">
+            <img src="images/switzerland.jpg" alt="Switzerland">
+            <div class="destination-content">
+                <h2>Swiss Alps</h2>
+                <p>Majestic mountains, charming villages, and world-class winter sports.</p>
+                <button class="explore-btn" data-destination="switzerland">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="historical">
+            <img src="images/egypt.jpg" alt="Egypt">
+            <div class="destination-content">
+                <h2>Cairo, Egypt</h2>
+                <p>Ancient pyramids, the Sphinx, and the mighty Nile River's history.</p>
+                <button class="explore-btn" data-destination="egypt">Explore</button>
+            </div>
+        </div>
+        
+        <div class="destination" data-category="beaches">
+            <img src="images/sydney.jpg" alt="Sydney">
+            <div class="destination-content">
+                <h2>Sydney, Australia</h2>
+                <p>Iconic Opera House, Harbour Bridge, and beautiful coastal beaches.</p>
+                <button class="explore-btn" data-destination="sydney">Explore</button>
+            </div>
+        </div>
+        <!-- Update the Madurai and Sivakasi destination cards to match others -->
+<div class="destination" data-category="historical cultural" data-search="madurai meenakshi amman temple tamil nadu india">
+    <img src="images/madurai.jpg" alt="Madurai">
+    <div class="destination-content">
+        <h2>Madurai, Tamil Nadu</h2>
+        <p>Meenakshi Temple and vibrant culture</p>
+        <button class="explore-btn" data-destination="Madurai">Explore</button>
+    </div>
+</div>
+
+<div class="destination" data-category="cultural industrial" data-search="sivakasi fireworks matches printing tamil nadu india">
+    <img src="images/sivakasi.jpg" alt="Sivakasi">
+    <div class="destination-content">
+        <h2>Sivakasi, Tamil Nadu</h2>
+        <p>Little Japan - Place of Fireworks</p>
+        <button class="explore-btn" data-destination="Sivakasi">Explore</button>
+    </div>
+</div>
+    </main>
+
+    <!-- Destination Details Modal -->
+    <section id="destination-details">
+        <div class="details-content">
+            <div class="action-buttons">
+                <button class="back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+                <i id="heartIcon" class="fa-regular fa-heart heart"></i>
+            </div>
+            
+            <h2 id="destination-title"></h2>
+            <img id="destination-image" src="" alt="Destination Image">
+            <p id="destination-description"></p>
+            
+            <div class="destination-info">
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="destination-location"></span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="best-time"></span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span id="price-range"></span>
+                </div>
+            </div>
+            
+            <h3><i class="fas fa-star"></i> Highlights</h3>
+            <ul id="highlights-list"></ul>
+            
+            <button class="view-package-btn"><i class="fas fa-suitcase"></i> Viewpackage</button>
+        </div>
+    </section>
+
+    <script>
+        // Destination data
+        const destinations = {
+    paris: {
+        title: "Paris, France",
+        image: "images/paris.jpg",
+        description: "Paris, France's capital, is a major European city and a global center for art, fashion, gastronomy and culture...",
+        location: "Île-de-France region, northern France",
+        bestTime: "April to June, September to October",
+        priceRange: "$$$ (Expensive)",
+        highlights: [
+            "Eiffel Tower",
+            "Louvre Museum",
+            "Notre-Dame Cathedral",
+            "Champs-Élysées",
+            "Montmartre district",
+            "Seine River cruise",
+            "Musée d'Orsay"
+        ],
+        lat: 48.8566,
+        lon: 2.3522
+    },
+    rome: {
+        title: "Rome, Italy",
+        image: "images/rome.jpg",
+        description: "Rome is the capital city of Italy, known as the 'Eternal City' for its rich history spanning over two and a half thousand years...",
+        location: "Lazio region, central Italy",
+        bestTime: "April to June, September to October",
+        priceRange: "$$ (Moderate)",
+        highlights: [
+            "Colosseum",
+            "Roman Forum",
+            "Trevi Fountain",
+            "Pantheon",
+            "Vatican City",
+            "Spanish Steps",
+            "Trastevere district"
+        ],
+        lat: 41.9028,
+        lon: 12.4964
+    },
+    barcelona: {
+        title: "Barcelona, Spain",
+        image: "images/barcelona.jpg",
+        description: "Barcelona, the cosmopolitan capital of Spain's Catalonia region, is known for its art and architecture...",
+        location: "Catalonia, northeastern Spain",
+        bestTime: "May to June, September to October",
+        priceRange: "$$ (Moderate)",
+        highlights: [
+            "Sagrada Família",
+            "Park Güell",
+            "La Rambla",
+            "Gothic Quarter",
+            "Casa Batlló",
+            "Montjuïc Castle",
+            "Barceloneta Beach"
+        ],
+        lat: 41.3851,
+        lon: 2.1734
+    },
+    bali: {
+        title: "Bali, Indonesia",
+        image: "images/bali.jpg",
+        description: "Bali is an Indonesian island known for its forested volcanic mountains, iconic rice paddies, beaches and coral reefs...",
+        location: "Indonesia, Southeast Asia",
+        bestTime: "April to October (Dry season)",
+        priceRange: "$ (Budget-friendly)",
+        highlights: [
+            "Uluwatu Temple",
+            "Tegallalang Rice Terraces",
+            "Ubud Monkey Forest",
+            "Mount Batur sunrise trek",
+            "Nusa Penida islands",
+            "Tanah Lot temple",
+            "Ubud Art Market"
+        ],
+        lat: -8.4095,
+        lon: 115.1889
+    },
+    kyoto: {
+        title: "Kyoto, Japan",
+        image: "images/japan.jpg",
+        description: "Kyoto, once the capital of Japan, is a city on the island of Honshu...",
+        location: "Kansai region, Honshu island",
+        bestTime: "March to May (Cherry blossoms), October to November (Fall colors)",
+        priceRange: "$$ (Moderate)",
+        highlights: [
+            "Fushimi Inari Shrine",
+            "Kinkaku-ji (Golden Pavilion)",
+            "Arashiyama Bamboo Forest",
+            "Kiyomizu-dera",
+            "Gion district",
+            "Philosopher's Path",
+            "Nijo Castle"
+        ],
+        lat: 35.0116,
+        lon: 135.7681
+    },
+    china: {
+        title: "Xi'an, China",
+        image: "images/china.jpg",
+        description: "Xi'an is a large city and capital of Shaanxi Province in central China...",
+        location: "Shaanxi Province, central China",
+        bestTime: "April to May, September to October",
+        priceRange: "$ (Budget-friendly)",
+        highlights: [
+            "Terracotta Army",
+            "Ancient City Wall",
+            "Bell Tower",
+            "Muslim Quarter",
+            "Big Wild Goose Pagoda",
+            "Shaanxi History Museum",
+            "Huaqing Hot Springs"
+        ],
+        lat: 34.3416,
+        lon: 108.9398
+    },
+    newyork: {
+        title: "New York, USA",
+        image: "images/newyork.jpg",
+        description: "New York City comprises 5 boroughs sitting where the Hudson River meets the Atlantic Ocean...",
+        location: "New York State, northeastern USA",
+        bestTime: "April to June, September to November",
+        priceRange: "$$$ (Expensive)",
+        highlights: [
+            "Statue of Liberty",
+            "Central Park",
+            "Times Square",
+            "Empire State Building",
+            "Metropolitan Museum of Art",
+            "Brooklyn Bridge",
+            "Broadway shows"
+        ],
+        lat: 40.7128,
+        lon: -74.0060
+    },
+    cancun: {
+        title: "Cancun, Mexico",
+        image: "images/cancun.jpg",
+        description: "Cancún, a Mexican city on the Yucatán Peninsula bordering the Caribbean Sea...",
+        location: "Quintana Roo, Yucatán Peninsula",
+        bestTime: "December to April (Dry season)",
+        priceRange: "$$ (Moderate)",
+        highlights: [
+            "Playa Delfines",
+            "Chichén Itzá day trip",
+            "Isla Mujeres",
+            "Xcaret Park",
+            "Cancun Underwater Museum",
+            "Coco Bongo nightclub",
+            "Tulum ruins"
+        ],
+        lat: 21.1619,
+        lon: -86.8515
+    },
+    maldives: {
+        title: "Maldives",
+        image: "images/maldives.jpg",
+        description: "The Maldives is a tropical nation in the Indian Ocean composed of 26 coral atolls...",
+        location: "Indian Ocean, southwest of Sri Lanka",
+        bestTime: "November to April (Dry season)",
+        priceRange: "$$$$ (Luxury)",
+        highlights: [
+            "Overwater bungalows",
+            "Snorkeling & diving",
+            "Bioluminescent beaches",
+            "Male' local islands",
+            "Sandbank picnics",
+            "Spa retreats",
+            "Sunset cruises"
+        ],
+        lat: 3.2028,
+        lon: 73.2207
+    },
+    switzerland: {
+        title: "Swiss Alps",
+        image: "images/switzerland.jpg",
+        description: "The Swiss Alps comprise most of the Alps mountain range within Switzerland...",
+        location: "Southern Switzerland",
+        bestTime: "December to March (Winter sports), June to September (Hiking)",
+        priceRange: "$$$$ (Expensive)",
+        highlights: [
+            "Matterhorn",
+            "Jungfraujoch railway",
+            "Interlaken",
+            "Zermatt ski resort",
+            "Lauterbrunnen Valley",
+            "Lake Geneva",
+            "Glacier Express train"
+        ],
+        lat: 46.8182,
+        lon: 8.2275
+    },
+    egypt: {
+        title: "Cairo, Egypt",
+        image: "images/egypt.jpg",
+        description: "Cairo, Egypt's sprawling capital, is set on the Nile River...",
+        location: "Nile River, northern Egypt",
+        bestTime: "October to April (Cooler months)",
+        priceRange: "$ (Budget-friendly)",
+        highlights: [
+            "Great Pyramids of Giza",
+            "Egyptian Museum",
+            "Khan el-Khalili bazaar",
+            "Nile River cruise",
+            "Islamic Cairo",
+            "Saqqara Pyramid",
+            "Coptic Cairo"
+        ],
+        lat: 30.0444,
+        lon: 31.2357
+    },
+    sydney: {
+        title: "Sydney, Australia",
+        image: "images/sydney.jpg",
+        description: "Sydney, capital of New South Wales and one of Australia's largest cities...",
+        location: "New South Wales, southeastern Australia",
+        bestTime: "September to November, March to May",
+        priceRange: "$$$ (Expensive)",
+        highlights: [
+            "Sydney Opera House",
+            "Harbour Bridge",
+            "Bondi Beach",
+            "Royal Botanic Garden",
+            "The Rocks district",
+            "Taronga Zoo",
+            "Blue Mountains day trip"
+        ],
+        lat: -33.8688,
+        lon: 151.2093
+    },
+    Sivakasi: {
+    title: "Sivakasi, India",
+    image: "images/sivakasi.jpg",
+    description: "Sivakasi is a town in Tamil Nadu, India, known for its firecracker, matchbox, and printing industries. It plays a vital role in India's industrial sector.",
+    location: "Virudhunagar district, Tamil Nadu, India",
+    bestTime: "November to February",
+    priceRange: "$ (Budget-friendly)",
+    highlights: [
+        "Fireworks and Matchstick Industries",
+        "Printing Presses",
+        "Badrakali Amman Temple",
+        "Sivakasi Mariamman Temple",
+        "Local Festivals",
+        "Traditional South Indian Cuisine"
+    ],
+    lat: 9.4490,
+    lon: 77.7964
+},
+Madurai: {
+    title: "Madurai, India",
+    image: "images/madurai.jpg",
+    description: "Madurai, one of the oldest cities in India, is famed for its rich cultural heritage and the iconic Meenakshi Amman Temple. It is a vibrant center of Tamil tradition and spirituality.",
+    location: "Tamil Nadu, India",
+    bestTime: "October to March",
+    priceRange: "$$ (Moderate)",
+    highlights: [
+        "Meenakshi Amman Temple",
+        "Thirumalai Nayakkar Palace",
+        "Gandhi Memorial Museum",
+        "Alagar Kovil",
+        "Vaigai Dam",
+        "Banana Market",
+        "Jigarthanda (local drink)"
+    ],
+    lat: 9.9252,
+    lon: 78.1198
+}
+
+};
+        // DOM elements
+        const exploreBtns = document.querySelectorAll('.explore-btn');
+        const destinationDetails = document.getElementById('destination-details');
+        const backBtn = document.querySelector('.back-btn');
+        const heartIcon = document.getElementById('heartIcon');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const searchBox = document.querySelector('.searchBox');
+        const destinationCards = document.querySelectorAll('.destination');
+        // Add this at the top of your script section (with other DOM element declarations)
+const viewPackageBtn = document.querySelector('.view-package-btn');
+let currentDestinationId = '';
+
+// Modify the exploreBtn click handler to store the current destination
+// Add to your exploreBtn click handler
+// Modify your exploreBtn click handler
+// Update your exploreBtn click handler
+// Global map reference
+let currentMap = null;
+let locationMessage = null;
+document.addEventListener('DOMContentLoaded', function() {
+const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    
+    document.querySelectorAll('.heart').forEach(icon => {
+        const card = icon.closest('.destination');
+        const destinationId = card.querySelector('.explore-btn').getAttribute('data-destination');
+        
+        // Check if this destination is in wishlist
+        if (wishlist.some(item => item.id === destinationId)) {
+            icon.classList.remove('fa-regular');
+            icon.classList.add('fa-solid', 'favorite');
+        }
+    });
+    
+    // Update wishlist count in navigation
+    updateWishlistCount();
+});
+
+// Modified exploreBtn click handler
+exploreBtns.forEach(btn => {
+    btn.addEventListener('click', async function() {
+        currentDestinationId = this.getAttribute('data-destination');
+        const destination = destinations[currentDestinationId];
+        
+        if (destination) {
+            // Update destination details
+            document.getElementById('destination-title').textContent = destination.title;
+            document.getElementById('destination-image').src = destination.image;
+            // ... (other detail updates)
+
+            // Initialize map container
+            const mapContainer = initializeMapContainer();
+            
+            // Clean up previous instances
+            cleanupPreviousMap();
+            removeLocationMessage();
+            
+            try {
+                const position = await getCurrentPosition();
+                await showOSMRoute(
+                    position.coords.latitude,
+                    position.coords.longitude,
+                    destination.lat,
+                    destination.lon,
+                    destination.title
+                );
+            } catch (error) {
+                console.log("Location error:", error);
+                await showDestinationMap(destination.lat, destination.lon, destination.title);
+                showSingleLocationMessage();
+            }
+            
+            destinationDetails.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    });
+});
+
+// Helper functions
+function initializeMapContainer() {
+    let mapContainer = document.getElementById('map-container');
+    if (!mapContainer) {
+        mapContainer = document.createElement('div');
+        mapContainer.id = 'map-container';
+        mapContainer.className = 'map-container';
+        const viewPackageBtn = document.querySelector('.view-package-btn');
+        viewPackageBtn.parentNode.insertBefore(mapContainer, viewPackageBtn);
+    } else {
+        mapContainer.innerHTML = '';
+    }
+    return mapContainer;
+}
+
+function cleanupPreviousMap() {
+    if (currentMap) {
+        currentMap.remove();
+        currentMap.off();
+        currentMap = null;
+    }
+}
+
+function removeLocationMessage() {
+    if (locationMessage) {
+        locationMessage.remove();
+        locationMessage = null;
+    }
+}
+
+function showSingleLocationMessage() {
+    if (!document.querySelector('.location-message')) {
+        locationMessage = document.createElement('div');
+        locationMessage.className = 'location-message';
+        locationMessage.innerHTML = `
+            <i class="fas fa-info-circle"></i>
+            <span>Enable location access to see route from your current position</span>
+        `;
+        document.getElementById('map-container').after(locationMessage);
+    }
+}
+
+async function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+            resolve,
+            reject,
+            { timeout: 5000, maximumAge: 60000 }
+        );
+    });
+}
+
+// Map functions
+async function showDestinationMap(lat, lon, title) {
+    try {
+        currentMap = L.map('map-container', {
+            preferCanvas: true,
+            fadeAnimation: false
+        }).setView([lat, lon], 12);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: false // Cleaner display
+        }).addTo(currentMap);
+        
+        L.marker([lat, lon])
+            .bindPopup(`<b>${title}</b>`)
+            .addTo(currentMap);
+    } catch (error) {
+        console.error("Map error:", error);
+        document.getElementById('map-container').innerHTML = `
+            <div class="map-error">
+                <i class="fas fa-map-marked-alt"></i>
+                <p>Map view unavailable</p>
+            </div>
+        `;
+    }
+}
+
+async function showOSMRoute(userLat, userLon, destLat, destLon, destName) {
+    try {
+        currentMap = L.map('map-container', {
+            preferCanvas: true,
+            fadeAnimation: false
+        }).setView([userLat, userLon], 8);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: false
+        }).addTo(currentMap);
+        
+        // Add markers
+        L.marker([userLat, userLon])
+            .bindPopup("<b>Your Location</b>")
+            .addTo(currentMap);
+            
+        L.marker([destLat, destLon])
+            .bindPopup(`<b>${destName}</b>`)
+            .addTo(currentMap);
+        
+        // Fetch route
+        const response = await fetch(
+            `https://router.project-osrm.org/route/v1/driving/${userLon},${userLat};${destLon},${destLat}?geometries=geojson`
+        );
+        const routeData = await response.json();
+        
+        L.geoJSON(routeData.routes[0].geometry, {
+            style: {
+                color: '#3b82f6',
+                weight: 4,
+                opacity: 0.8,
+                lineJoin: 'round'
+            }
+        }).addTo(currentMap);
+        
+        currentMap.fitBounds([
+            [userLat, userLon],
+            [destLat, destLon]
+        ], { padding: [30, 30] });
+    } catch (error) {
+        console.error("Routing error:", error);
+        throw error; // Fall back to destination map
+    }
+}
+// Add this new event listener for the view package button
+viewPackageBtn.addEventListener('click', function() {
+            if (currentDestinationId) {
+                // Store both the selected destination and a flag to filter by destination
+                localStorage.setItem('selectedDestination', currentDestinationId);
+                localStorage.setItem('filterByDestination', 'true');
+                window.location.href = 'package.html';
+            }
+        });
+        // Show destination details
+        exploreBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const destinationId = this.getAttribute('data-destination');
+                const destination = destinations[destinationId];
+                
+                if (destination) {
+                    document.getElementById('destination-title').textContent = destination.title;
+                    document.getElementById('destination-image').src = destination.image;
+                    document.getElementById('destination-image').alt = destination.title;
+                    document.getElementById('destination-description').textContent = destination.description;
+                    document.getElementById('destination-location').textContent = destination.location;
+                    document.getElementById('best-time').textContent = destination.bestTime;
+                    document.getElementById('price-range').textContent = destination.priceRange;
+                    
+                    const highlightsList = document.getElementById('highlights-list');
+                    highlightsList.innerHTML = '';
+                    destination.highlights.forEach(highlight => {
+                        const li = document.createElement('li');
+                        li.textContent = highlight;
+                        highlightsList.appendChild(li);
+                    });
+                    
+                    destinationDetails.classList.add('show');
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+                }
+            });
+        });
+
+        // Hide destination details
+        backBtn.addEventListener('click', function() {
+            destinationDetails.classList.remove('show');
+            document.body.style.overflow = 'auto'; // Re-enable scrolling
+        });
+
+        // Favorite toggle
+        // Heart icon click handler in destination details modal
+heartIcon.addEventListener('click', function() {
+    const destinationId = document.getElementById('destination-title').textContent.toLowerCase().replace(/,/g, '').replace(/\s+/g, '-');
+    const destinationTitle = document.getElementById('destination-title').textContent;
+    const destinationImage = document.getElementById('destination-image').src;
+    
+    // Toggle visual state
+    this.classList.toggle('fa-regular');
+    this.classList.toggle('fa-solid');
+    this.classList.toggle('favorite');
+    
+    // Update wishlist in localStorage
+    const isFavorite = this.classList.contains('favorite');
+    updateWishlist(destinationId, destinationTitle, destinationImage, isFavorite);
+    
+    // Update heart icons on main page
+    updateHeartIconsOnMainPage(destinationId, isFavorite);
+    
+    // Update wishlist count
+    updateWishlistCount();
+});
+
+function updateWishlist(id, title, image, isFavorite) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    
+    if (isFavorite) {
+        // Add to wishlist if not already there
+        if (!wishlist.some(item => item.id === id)) {
+            wishlist.push({ 
+                id, 
+                title, 
+                image,
+                addedDate: new Date().toISOString() 
+            });
+        }
+    } else {
+        // Remove from wishlist
+        wishlist = wishlist.filter(item => item.id !== id);
+    }
+    
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+}
+
+function updateHeartIconsOnMainPage(destinationId, isFavorite) {
+    // Update all matching heart icons on the main page
+    document.querySelectorAll('.destination').forEach(card => {
+        const btn = card.querySelector('.explore-btn');
+        if (btn && btn.getAttribute('data-destination') === destinationId) {
+            const icon = card.querySelector('.heart');
+            if (icon) {
+                icon.classList.toggle('fa-regular', !isFavorite);
+                icon.classList.toggle('fa-solid', isFavorite);
+                icon.classList.toggle('favorite', isFavorite);
+            }
+        }
+    });
+}
+
+function updateWishlistCount() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const countElement = document.querySelector('.wishlist-link .count');
+    
+    if (!countElement) {
+        // Create count element if it doesn't exist
+        const wishlistLink = document.querySelector('a[href="wishlist.html"]');
+        if (wishlistLink) {
+            const countEl = document.createElement('span');
+            countEl.className = 'count';
+            wishlistLink.appendChild(countEl);
+        }
+    }
+    
+    if (countElement) {
+        if (wishlist.length > 0) {
+            countElement.textContent = wishlist.length;
+            countElement.style.display = 'flex';
+        } else {
+            countElement.style.display = 'none';
+        }
+    }
+}
+
+
+        // Filter functionality
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.textContent.toLowerCase();
+                if (filter === 'all') {
+                    destinationCards.forEach(card => card.style.display = 'flex');
+                    return;
+                }
+                
+                destinationCards.forEach(card => {
+                    const categories = card.getAttribute('data-category');
+                    if (categories.includes(filter)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Search functionality
+        searchBox.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            destinationCards.forEach(card => {
+                const title = card.querySelector('h2').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Close modal when clicking outside
+        destinationDetails.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('show');
+                document.body.style.overflow = 'auto';
+            }
+        });
+        const searchInput = document.getElementById('destination-search');
+  const micButton = document.getElementById('mic-button');
+  const statusDiv = document.getElementById('status');
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    statusDiv.textContent = "Voice search is not supported in this browser.";
+    micButton.disabled = true;
+  } else {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    micButton.addEventListener('click', () => {
+      recognition.start();
+      statusDiv.textContent = "🎤 Listening...";
+    });
+
+    recognition.onresult = (event) => {
+    const voiceText = event.results[0][0].transcript.trim().toLowerCase();
+    searchInput.value = voiceText;
+
+    if (statusDiv) {
+        statusDiv.textContent = `✅ You said: "${voiceText}"`;
+    }
+
+    filterDestinationsByVoice(voiceText);
+};
+
+recognition.onerror = (event) => {
+    if (statusDiv) {
+        statusDiv.textContent = `❌ Error: ${event.error}`;
+    }
+};
+
+recognition.onend = () => {
+    if (statusDiv) {
+        statusDiv.textContent += " (Done)";
+    }
+};
+function normalize(text) {
+    // Normalize by converting to lowercase and removing unwanted characters
+    // Strip non-alphanumeric characters (including punctuation marks) at the end of the word
+    return text.toLowerCase().trim().replace(/[^a-z0-9\s]/gi, '').replace(/[^\w\s]$/g, '');
+}
+
+function filterDestinationsByVoice(searchTerm) {
+    // Normalize the search term to handle punctuation and unwanted characters
+    const normalizedSearch = normalize(searchTerm);
+    const destinationCards = document.querySelectorAll('.destination');
+    let found = false;
+
+    destinationCards.forEach(card => {
+        const title = card.querySelector('h2')?.textContent || "";
+        const category = card.getAttribute('data-category') || "";
+        
+        // Normalize the title and category of each card to match with the search term
+        const normalizedTitle = normalize(title);
+        const normalizedCategory = normalize(category);
+
+        // Check if the normalized search term matches either the title or category
+        const match = normalizedTitle.includes(normalizedSearch) || normalizedCategory.includes(normalizedSearch);
+
+        if (match) {
+            card.style.display = "flex";  // Show the matching destination
+            found = true;
+        } else {
+            card.style.display = "none"; // Hide the non-matching destination
+        }
+    });
+
+    // Handle case when no results are found
+    let noResultMsg = document.getElementById('no-result');
+    if (!found) {
+        if (!noResultMsg) {
+            noResultMsg = document.createElement('div');
+            noResultMsg.id = 'no-result';
+            
+            // Add a custom message and an image to the 'no results' area
+            noResultMsg.innerHTML = `
+                <img src="images/no-results.png" alt="No results" style="width: 100px; height: 100px; margin-bottom: 1rem;">
+                <div>No destinations found for "${searchTerm}"</div>
+            `;
+
+            // Style the 'No results' message
+            noResultMsg.style.textAlign = "center";
+            noResultMsg.style.fontSize = "1.5rem";
+            noResultMsg.style.color = "#black"; // Red color for emphasis
+            noResultMsg.style.marginTop = "3rem";
+            noResultMsg.style.padding = "2rem";
+            noResultMsg.style.border = "2px solid #e74c3c";
+            noResultMsg.style.borderRadius = "10px";
+            noResultMsg.style.backgroundColor = "#f9f9f9"; // Light background
+            noResultMsg.style.boxShadow = "0px 4px 8px rgba(0, 0, 0, 0.1)";
+            noResultMsg.style.maxWidth = "400px"; // Optional: limit width for better display
+            noResultMsg.style.margin = "3rem auto"; // Center it horizontally
+            noResultMsg.style.fontWeight = "bold";
+            noResultMsg.style.textTransform = "uppercase"; // Uppercase to make it stand out
+
+            document.querySelector('.destinations-list').appendChild(noResultMsg);
+        }
+    } else if (noResultMsg) {
+        noResultMsg.remove();
+    }
+}
+
+
+
+  }
+  
+    </script>
+</body>
+</html>
